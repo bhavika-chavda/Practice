@@ -1,0 +1,18 @@
+from pyspark import SparkConf, SparkContext
+from bs4 import BeautifulSoup
+import requests
+
+sc = SparkContext("local","image count")
+
+u = "https://www.umbc.edu"
+response = requests.get(u)
+soup = BeautifulSoup(response.content)
+
+emp_list = []
+for i in soup.find_all("img"):
+    emp_list.append(i["src"])
+
+rdd = sc.parallelize(emp_list)
+
+print('There are',rdd.count(),'images in the url')
+print('The images are:',rdd.collect())
